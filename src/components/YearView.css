@@ -25,7 +25,7 @@
 
 .year-month {
   position: relative;
-  height: 120px;
+  aspect-ratio: 1 / 1;
   border-radius: 16px;
   overflow: hidden;
   cursor: pointer;
@@ -51,7 +51,7 @@
 .year-month-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 100%);
+  background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.32) 50%, rgba(0,0,0,0.18) 100%);
 }
 
 .year-crown {
