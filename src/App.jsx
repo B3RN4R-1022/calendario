@@ -5,7 +5,6 @@ import Calendar from './components/Calendar'
 import ProfileSetup from './components/ProfileSetup'
 import StatusView from './components/StatusView'
 import YearView from './components/YearView'
-import BottomNav from './components/BottomNav'
 import './index.css'
 
 export default function App() {
@@ -58,24 +57,26 @@ export default function App() {
   }
 
   return (
-    <div style={{ paddingBottom: 64 }}>
+    <div>
       {view === 'calendar' && (
         <Calendar
           user={session.user}
           current={calendarDate}
           onCurrentChange={setCalendarDate}
+          view={view}
+          onChangeView={setView}
         />
       )}
       {view === 'status' && (
-        <StatusView user={session.user} />
+        <StatusView user={session.user} onChangeView={setView} />
       )}
       {view === 'year' && (
         <YearView
           year={calendarDate.getFullYear()}
           onSelectMonth={(date) => { setCalendarDate(date); setView('calendar') }}
+          onChangeView={setView}
         />
       )}
-      <BottomNav view={view} onChangeView={setView} />
     </div>
   )
 }

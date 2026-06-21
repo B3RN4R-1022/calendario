@@ -4,9 +4,16 @@ import { ptBR } from 'date-fns/locale'
 import { supabase } from '../supabaseClient'
 import './YearView.css'
 
-export default function YearView({ year, onSelectMonth }) {
+const NAV_ITEMS = [
+  { id: 'calendar', icon: '📅', label: 'Calendário' },
+  { id: 'status',   icon: '🏷️',  label: 'Status' },
+  { id: 'year',     icon: '🗓️',  label: 'Ano' },
+]
+
+export default function YearView({ year, onSelectMonth, onChangeView }) {
   const [covers, setCovers] = useState({})
   const [crownMonths, setCrownMonths] = useState(new Set())
+  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
     loadData()
@@ -37,7 +44,25 @@ export default function YearView({ year, onSelectMonth }) {
 
   return (
     <div className="year-view">
-      <h2 className="year-heading">{year}</h2>
+      <div className="view-topbar">
+        <h2 className="year-heading">{year}</h2>
+        <div className="view-menu-wrapper">
+          <button className="view-menu-btn" onClick={() => setMenuOpen(o => !o)}>☰</button>
+          {menuOpen && (
+            <div className="view-menu-dropdown">
+              {NAV_ITEMS.map(t => (
+                <button
+                  key={t.id}
+                  className={`view-menu-item ${t.id === 'year' ? 'active' : ''}`}
+                  onClick={() => { onChangeView(t.id); setMenuOpen(false) }}
+                >
+                  {t.icon} {t.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
       <div className="year-grid">
         {Array.from({ length: 12 }, (_, i) => {
           const date = new Date(year, i, 1)

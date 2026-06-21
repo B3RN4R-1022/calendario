@@ -19,9 +19,10 @@ const MONTH_DEFAULTS = {
   11: { bg: '#0a0a0a', label: 'Dezembro' },
 }
 
-export default function MonthCover({ month, onPrev, onNext, user, onLogout }) {
+export default function MonthCover({ month, onPrev, onNext, user, onLogout, view, onChangeView }) {
   const [coverUrl, setCoverUrl] = useState(null)
   const [uploading, setUploading] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
   const fileRef = useRef()
   const monthKey = `cover_${month.getFullYear()}_${month.getMonth()}`
   const monthIdx = month.getMonth()
@@ -76,20 +77,45 @@ export default function MonthCover({ month, onPrev, onNext, user, onLogout }) {
           <span className="cover-avatar">{user.email[0].toUpperCase()}</span>
           <button onClick={onLogout} className="cover-logout">Sair</button>
         </div>
-        <button
-          className="cover-upload-btn"
-          onClick={() => fileRef.current.click()}
-          title="Trocar foto do mês"
-        >
-          {uploading ? '...' : '📷'}
-        </button>
-        <input
-          ref={fileRef}
-          type="file"
-          accept="image/*"
-          style={{ display: 'none' }}
-          onChange={handleFileChange}
-        />
+        <div className="cover-menu-wrapper">
+          <button
+            className="cover-menu-btn"
+            onClick={() => setMenuOpen(o => !o)}
+          >
+            ☰
+          </button>
+          {menuOpen && (
+            <div className="cover-menu-dropdown">
+              {[
+                { id: 'calendar', icon: '📅', label: 'Calendário' },
+                { id: 'status',   icon: '🏷️',  label: 'Status' },
+                { id: 'year',     icon: '🗓️',  label: 'Ano' },
+              ].map(t => (
+                <button
+                  key={t.id}
+                  className={`cover-menu-item ${view === t.id ? 'active' : ''}`}
+                  onClick={() => { onChangeView(t.id); setMenuOpen(false) }}
+                >
+                  {t.icon} {t.label}
+                </button>
+              ))}
+              <div className="cover-menu-divider" />
+              <button
+                className="cover-menu-item"
+                onClick={() => { fileRef.current.click(); setMenuOpen(false) }}
+              >
+                {uploading ? '⏳ Enviando...' : '📷 Trocar foto'}
+              </button>
+            </div>
+          )}
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/*"
+            style={{ display: 'none' }}
+            onChange={handleFileChange}
+          />
+        </div>
       </div>
 
       <div className="cover-center">

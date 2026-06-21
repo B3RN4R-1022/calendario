@@ -11,7 +11,7 @@ import './Calendar.css'
 
 const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
 
-export default function Calendar({ user, current, onCurrentChange }) {
+export default function Calendar({ user, current, onCurrentChange, view, onChangeView }) {
   const [events, setEvents] = useState([])
   const [profiles, setProfiles] = useState({})
   const [selectedDay, setSelectedDay] = useState(null)
@@ -72,6 +72,8 @@ export default function Calendar({ user, current, onCurrentChange }) {
         onNext={() => onCurrentChange(d => addMonths(d, 1))}
         user={user}
         onLogout={() => supabase.auth.signOut()}
+        view={view}
+        onChangeView={onChangeView}
       />
 
       <div className="cal-grid-container">

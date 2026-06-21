@@ -15,7 +15,14 @@ const TAGS = [
   { label: 'Clínica',          emoji: '🏥' },
 ]
 
-export default function StatusView({ user }) {
+const NAV_ITEMS = [
+  { id: 'calendar', icon: '📅', label: 'Calendário' },
+  { id: 'status',   icon: '🏷️',  label: 'Status' },
+  { id: 'year',     icon: '🗓️',  label: 'Ano' },
+]
+
+export default function StatusView({ user, onChangeView }) {
+  const [menuOpen, setMenuOpen] = useState(false)
   const [profiles, setProfiles] = useState([])
   const [myStatus, setMyStatus] = useState(null)
   const [saving, setSaving] = useState(false)
@@ -54,7 +61,25 @@ export default function StatusView({ user }) {
 
   return (
     <div className="status-view">
-      <h2 className="status-title">Status agora</h2>
+      <div className="view-topbar">
+        <h2 className="status-title">Status agora</h2>
+        <div className="view-menu-wrapper">
+          <button className="view-menu-btn" onClick={() => setMenuOpen(o => !o)}>☰</button>
+          {menuOpen && (
+            <div className="view-menu-dropdown">
+              {NAV_ITEMS.map(t => (
+                <button
+                  key={t.id}
+                  className={`view-menu-item ${t.id === 'status' ? 'active' : ''}`}
+                  onClick={() => { onChangeView(t.id); setMenuOpen(false) }}
+                >
+                  {t.icon} {t.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
 
       <div className="status-cards">
         {me && (
