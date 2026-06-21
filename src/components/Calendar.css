@@ -97,9 +97,15 @@
   padding: 5px 8px;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   overflow: hidden;
   min-height: 24px;
+}
+
+.cal-event-crown {
+  font-size: 10px;
+  flex-shrink: 0;
+  line-height: 1;
 }
 
 .cal-event-time {

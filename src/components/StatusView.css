@@ -1,0 +1,114 @@
+.status-view {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 24px 16px 32px;
+}
+
+.status-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 20px;
+}
+
+.status-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.status-card {
+  background: rgba(255,255,255,0.06);
+  border: 2px solid;
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.status-card-name {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.status-card-current {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.status-empty {
+  color: rgba(255,255,255,0.3);
+  font-style: italic;
+  font-size: 13px;
+}
+
+.status-section-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 14px;
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.status-tag-btn {
+  background: rgba(255,255,255,0.06);
+  border: 1.5px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  padding: 14px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255,255,255,0.7);
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  text-align: left;
+}
+
+.status-tag-btn:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.2);
+  color: #fff;
+}
+
+.status-tag-btn.active {
+  background: rgba(245,200,66,0.15);
+  border-color: #f5c842;
+  color: #f5c842;
+}
+
+.status-tag-emoji {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.status-tag-label {
+  font-size: 13px;
+}
+
+.status-clear-btn {
+  width: 100%;
+  background: rgba(255,80,80,0.08);
+  border: 1px solid rgba(255,80,80,0.25);
+  border-radius: 12px;
+  padding: 12px;
+  color: rgba(255,130,130,0.9);
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.status-clear-btn:hover {
+  background: rgba(255,80,80,0.18);
+}

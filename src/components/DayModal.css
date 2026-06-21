@@ -193,6 +193,17 @@
   color: #fff;
 }
 
+.post-crown {
+  font-size: 13px;
+}
+
+/* Toggles row */
+.modal-toggles {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 /* Shared toggle */
 .shared-toggle {
   display: flex;

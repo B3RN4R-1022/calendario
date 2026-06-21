@@ -3,11 +3,16 @@ import { supabase } from './supabaseClient'
 import Login from './components/Login'
 import Calendar from './components/Calendar'
 import ProfileSetup from './components/ProfileSetup'
+import StatusView from './components/StatusView'
+import YearView from './components/YearView'
+import BottomNav from './components/BottomNav'
 import './index.css'
 
 export default function App() {
   const [session, setSession] = useState(undefined)
   const [profile, setProfile] = useState(undefined)
+  const [view, setView] = useState('calendar')
+  const [calendarDate, setCalendarDate] = useState(new Date())
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -52,5 +57,25 @@ export default function App() {
     )
   }
 
-  return <Calendar user={session.user} />
+  return (
+    <div style={{ paddingBottom: 64 }}>
+      {view === 'calendar' && (
+        <Calendar
+          user={session.user}
+          current={calendarDate}
+          onCurrentChange={setCalendarDate}
+        />
+      )}
+      {view === 'status' && (
+        <StatusView user={session.user} />
+      )}
+      {view === 'year' && (
+        <YearView
+          year={calendarDate.getFullYear()}
+          onSelectMonth={(date) => { setCalendarDate(date); setView('calendar') }}
+        />
+      )}
+      <BottomNav view={view} onChangeView={setView} />
+    </div>
+  )
 }

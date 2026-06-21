@@ -11,8 +11,7 @@ import './Calendar.css'
 
 const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
 
-export default function Calendar({ user }) {
-  const [current, setCurrent] = useState(new Date())
+export default function Calendar({ user, current, onCurrentChange }) {
   const [events, setEvents] = useState([])
   const [profiles, setProfiles] = useState({})
   const [selectedDay, setSelectedDay] = useState(null)
@@ -69,8 +68,8 @@ export default function Calendar({ user }) {
     <div className="cal-wrapper">
       <MonthCover
         month={current}
-        onPrev={() => setCurrent(d => subMonths(d, 1))}
-        onNext={() => setCurrent(d => addMonths(d, 1))}
+        onPrev={() => onCurrentChange(d => subMonths(d, 1))}
+        onNext={() => onCurrentChange(d => addMonths(d, 1))}
         user={user}
         onLogout={() => supabase.auth.signOut()}
       />
@@ -103,6 +102,7 @@ export default function Calendar({ user }) {
                       className="cal-event-chip"
                       style={{ background: eventColor(ev) }}
                     >
+                      {ev.is_important && <span className="cal-event-crown">👑</span>}
                       <span className="cal-event-time">{ev.time}</span>
                       <span className="cal-event-title">{ev.title}</span>
                     </div>
