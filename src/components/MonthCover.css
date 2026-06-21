@@ -58,6 +58,79 @@
   background: rgba(255,255,255,0.2);
 }
 
+/* Adjust mode */
+.cover--adjust .cover-overlay {
+  background: linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.45) 100%);
+}
+
+.cover--adjust::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 3px dashed rgba(255,255,255,0.5);
+  border-radius: 0 0 28px 28px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.cover-adjust-ui {
+  position: relative;
+  z-index: 3;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  pointer-events: none;
+}
+
+.cover-adjust-hint {
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+  letter-spacing: 0.2px;
+}
+
+.cover-adjust-btns {
+  display: flex;
+  gap: 12px;
+  pointer-events: all;
+}
+
+.cover-adjust-cancel,
+.cover-adjust-save {
+  border: none;
+  border-radius: 12px;
+  padding: 10px 22px;
+  font-size: 14px;
+  font-weight: 700;
+  transition: opacity 0.2s, transform 0.1s;
+}
+
+.cover-adjust-cancel {
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+  backdrop-filter: blur(4px);
+}
+
+.cover-adjust-save {
+  background: #f5c842;
+  color: #1a1a1a;
+}
+
+.cover-adjust-cancel:hover,
+.cover-adjust-save:hover {
+  opacity: 0.88;
+  transform: scale(1.03);
+}
+
+/* Menu */
 .cover-menu-wrapper {
   position: relative;
 }
