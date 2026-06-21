@@ -13,6 +13,8 @@ const TAGS = [
   { label: 'Dormindo',         emoji: '😴' },
   { label: 'Faculdade',        emoji: '🎓' },
   { label: 'Clínica',          emoji: '🏥' },
+  { label: 'Em Casa',          emoji: '🏠' },
+  { label: 'Casa de Vó',       emoji: '👵' },
 ]
 
 const NAV_ITEMS = [
