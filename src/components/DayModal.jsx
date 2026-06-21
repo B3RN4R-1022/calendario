@@ -76,15 +76,13 @@ export default function DayModal({ day, events, user, userColor, onClose, onRefr
                     {ev.is_shared ? '❤️ Para os dois' : (ev.profile?.name || '')}
                   </span>
                 </div>
-                {isOwn && (
-                  <button
-                    className="post-delete"
-                    onClick={() => deleteEvent(ev.id)}
-                    disabled={deleting === ev.id}
-                  >
-                    {deleting === ev.id ? '...' : '✕'}
-                  </button>
-                )}
+                <button
+                  className="post-delete"
+                  onClick={() => deleteEvent(ev.id)}
+                  disabled={deleting === ev.id}
+                >
+                  {deleting === ev.id ? '...' : '✕'}
+                </button>
               </div>
             )
           })}
