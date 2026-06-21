@@ -53,7 +53,7 @@ export default function MonthCover({ month, onPrev, onNext, user, onLogout }) {
     const { data: urlData } = supabase.storage
       .from('calendar-covers')
       .getPublicUrl(path)
-    const url = urlData.publicUrl
+    const url = urlData.publicUrl + '?t=' + Date.now()
 
     await supabase.from('month_covers').upsert({ month_key: monthKey, url })
     setCoverUrl(url)
