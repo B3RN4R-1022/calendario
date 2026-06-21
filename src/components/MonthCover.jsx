@@ -42,7 +42,7 @@ export default function MonthCover({ month, onPrev, onNext, user, onLogout, view
       .from('month_covers')
       .select('url, bg_position')
       .eq('month_key', monthKey)
-      .single()
+      .maybeSingle()
     setCoverUrl(data?.url || null)
     setBgPos(data?.bg_position || '50% 50%')
   }
@@ -74,7 +74,8 @@ export default function MonthCover({ month, onPrev, onNext, user, onLogout, view
       .getPublicUrl(path)
     const url = urlData.publicUrl
 
-    await supabase.from('month_covers').upsert({ month_key: monthKey, url })
+    await supabase.from('month_covers')
+      .upsert({ month_key: monthKey, url }, { onConflict: 'month_key' })
     setCoverUrl(url)
     setBgPos('50% 50%')
     setUploading(false)
@@ -101,11 +102,8 @@ export default function MonthCover({ month, onPrev, onNext, user, onLogout, view
   }
 
   async function savePosition() {
-    await supabase.from('month_covers').upsert({
-      month_key: monthKey,
-      url: coverUrl,
-      bg_position: bgPos,
-    }).then(() => {}) // silent if bg_position column doesn't exist yet
+    await supabase.from('month_covers')
+      .upsert({ month_key: monthKey, url: coverUrl, bg_position: bgPos }, { onConflict: 'month_key' })
     setAdjustMode(false)
   }
 
