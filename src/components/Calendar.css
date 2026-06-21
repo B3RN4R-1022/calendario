@@ -93,19 +93,21 @@
 }
 
 .cal-event-chip {
-  border-radius: 6px;
-  padding: 3px 6px;
+  border-radius: 8px;
+  padding: 5px 8px;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   overflow: hidden;
+  min-height: 24px;
 }
 
 .cal-event-time {
-  font-size: 10px;
-  color: rgba(255,255,255,0.7);
+  font-size: 11px;
+  color: rgba(255,255,255,0.85);
   white-space: nowrap;
   flex-shrink: 0;
+  font-weight: 600;
 }
 
 .cal-event-title {
