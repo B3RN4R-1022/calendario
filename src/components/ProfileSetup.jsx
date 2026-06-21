@@ -4,7 +4,7 @@ import './ProfileSetup.css'
 
 const COLORS = [
   { label: 'Preto (você)', value: '#1a1a1a' },
-  { label: 'Azul celeste (ela)', value: '#5bc0eb' },
+  { label: 'Azul celeste (ela)', value: '#1a8ab5' },
 ]
 
 export default function ProfileSetup({ user, onDone }) {
