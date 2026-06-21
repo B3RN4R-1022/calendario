@@ -13,9 +13,9 @@ export default function YearView({ year, onSelectMonth }) {
   }, [year])
 
   async function loadData() {
-    const keys = Array.from({ length: 12 }, (_, i) =>
-      `${year}-${String(i + 1).padStart(2, '0')}`
-    )
+    // MonthCover saves keys as "cover_YYYY_M" (0-based month index)
+    const keys = Array.from({ length: 12 }, (_, i) => `cover_${year}_${i}`)
+
     const [coversRes, eventsRes] = await Promise.all([
       supabase.from('month_covers').select('month_key, url').in('month_key', keys),
       supabase.from('events').select('date')
@@ -41,9 +41,10 @@ export default function YearView({ year, onSelectMonth }) {
       <div className="year-grid">
         {Array.from({ length: 12 }, (_, i) => {
           const date = new Date(year, i, 1)
-          const key = format(date, 'yyyy-MM')
-          const coverUrl = covers[key]
-          const hasCrown = crownMonths.has(key)
+          const coverKey = `cover_${year}_${i}`
+          const coverUrl = covers[coverKey]
+          const monthKey = format(date, 'yyyy-MM')
+          const hasCrown = crownMonths.has(monthKey)
           const isCurrent = i === now.getMonth() && year === now.getFullYear()
           const name = format(date, 'MMMM', { locale: ptBR })
 
