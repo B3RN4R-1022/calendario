@@ -44,6 +44,7 @@ export default function Calendar({ user }) {
       .select('*')
       .gte('date', start)
       .lte('date', end)
+      .order('time', { ascending: true })
     if (data) setEvents(data)
   }
 
