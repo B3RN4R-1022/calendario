@@ -51,19 +51,30 @@ export default function MonthCover({ month, onPrev, onNext, user, onLogout, view
     const file = e.target.files[0]
     if (!file) return
     setUploading(true)
+
+    // Delete old file from storage before uploading new one
+    if (coverUrl) {
+      try {
+        const oldPath = coverUrl.split('/calendar-covers/')[1]?.split('?')[0]
+        if (oldPath) await supabase.storage.from('calendar-covers').remove([oldPath])
+      } catch (_) {}
+    }
+
     const ext = file.name.split('.').pop()
-    const path = `covers/${monthKey}.${ext}`
+    // Unique path per upload so CDN never serves a cached version
+    const path = `covers/${monthKey}_${Date.now()}.${ext}`
+
     const { error: upErr } = await supabase.storage
       .from('calendar-covers')
-      .upload(path, file, { upsert: true })
+      .upload(path, file)
     if (upErr) { setUploading(false); return }
 
     const { data: urlData } = supabase.storage
       .from('calendar-covers')
       .getPublicUrl(path)
-    const url = urlData.publicUrl + '?t=' + Date.now()
+    const url = urlData.publicUrl
 
-    await supabase.from('month_covers').upsert({ month_key: monthKey, url, bg_position: '50% 50%' })
+    await supabase.from('month_covers').upsert({ month_key: monthKey, url })
     setCoverUrl(url)
     setBgPos('50% 50%')
     setUploading(false)
@@ -94,7 +105,7 @@ export default function MonthCover({ month, onPrev, onNext, user, onLogout, view
       month_key: monthKey,
       url: coverUrl,
       bg_position: bgPos,
-    })
+    }).then(() => {}) // silent if bg_position column doesn't exist yet
     setAdjustMode(false)
   }
 
