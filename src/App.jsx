@@ -10,7 +10,7 @@ import './index.css'
 export default function App() {
   const [session, setSession] = useState(undefined)
   const [profile, setProfile] = useState(undefined)
-  const [view, setView] = useState('calendar')
+  const [view, setView] = useState('status')
   const [calendarDate, setCalendarDate] = useState(new Date())
 
   useEffect(() => {
