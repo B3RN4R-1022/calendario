@@ -1,32 +1,32 @@
-const express = require('express')
-const {
-  default: makeWASocket,
+import express from 'express'
+import makeWASocket, {
   DisconnectReason,
   fetchLatestBaileysVersion,
   makeCacheableSignalKeyStore,
   BufferJSON,
   initAuthCreds,
-} = require('@whiskeysockets/baileys')
-const { createClient } = require('@supabase/supabase-js')
-const pino = require('pino')
+} from '@whiskeysockets/baileys'
+import { wrapSocket } from 'baileys-antiban'
+import { createClient } from '@supabase/supabase-js'
+import pino from 'pino'
 
 const app = express()
 app.use(express.json())
 
-// ── Config ──────────────────────────────────────────
+// ── Config ────────────────────────────────────────────
 const BOT_SECRET   = process.env.BOT_SECRET
 const SUPABASE_URL = process.env.SUPABASE_URL
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY
 
 if (!BOT_SECRET || !SUPABASE_URL || !SUPABASE_KEY) {
-  console.error('❌ Missing env vars: BOT_SECRET, SUPABASE_URL, SUPABASE_SERVICE_KEY')
+  console.error('❌ Faltam variáveis: BOT_SECRET, SUPABASE_URL, SUPABASE_SERVICE_KEY')
   process.exit(1)
 }
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 const BUCKET   = 'whatsapp-auth'
 
-// ── Auth via Supabase Storage (persiste entre restarts) ──
+// ── Auth persistida no Supabase Storage ───────────────
 async function ensureBucket() {
   await supabase.storage.createBucket(BUCKET, { public: false }).catch(() => {})
 }
@@ -77,7 +77,7 @@ async function useSupabaseAuthState() {
   }
 }
 
-// ── WhatsApp ──────────────────────────────────────────
+// ── WhatsApp + antiban ────────────────────────────────
 let sock        = null
 let isConnected = false
 
@@ -85,7 +85,7 @@ async function connect() {
   const { state, saveCreds } = await useSupabaseAuthState()
   const { version }          = await fetchLatestBaileysVersion()
 
-  sock = makeWASocket({
+  const rawSock = makeWASocket({
     version,
     auth: {
       creds: state.creds,
@@ -95,9 +95,12 @@ async function connect() {
     logger: pino({ level: 'silent' }),
   })
 
-  sock.ev.on('creds.update', saveCreds)
+  // Wrap com antiban: simula digitação humana e varia conteúdo
+  sock = wrapSocket(rawSock)
 
-  sock.ev.on('connection.update', ({ connection, lastDisconnect }) => {
+  rawSock.ev.on('creds.update', saveCreds)
+
+  rawSock.ev.on('connection.update', ({ connection, lastDisconnect }) => {
     isConnected = connection === 'open'
     if (connection === 'close') {
       const code = lastDisconnect?.error?.output?.statusCode
@@ -105,17 +108,17 @@ async function connect() {
         console.log('🔄 Reconectando...')
         setTimeout(connect, 4000)
       } else {
-        console.log('⚠️  Desconectado. Reinicie o servidor para escanear o QR.')
+        console.log('⚠️  Desconectado. Reinicie para escanear o QR novamente.')
       }
     } else if (connection === 'open') {
-      console.log('✅ WhatsApp conectado!')
+      console.log('✅ WhatsApp conectado com antiban ativo!')
     }
   })
 }
 
 connect()
 
-// ── Security ──────────────────────────────────────────
+// ── Segurança ─────────────────────────────────────────
 app.use((req, res, next) => {
   if (req.path === '/health') return next()
   if (req.headers['x-bot-secret'] !== BOT_SECRET) {
@@ -127,7 +130,6 @@ app.use((req, res, next) => {
 // ── Endpoints ─────────────────────────────────────────
 app.get('/health', (_req, res) => res.json({ ok: true, connected: isConnected }))
 
-// Enviar mensagem para o grupo
 app.post('/send', async (req, res) => {
   if (!isConnected) return res.status(503).json({ error: 'WhatsApp não conectado' })
   const { groupId, message } = req.body
@@ -140,7 +142,6 @@ app.post('/send', async (req, res) => {
   }
 })
 
-// Listar grupos (use para pegar o groupId após conectar)
 app.get('/groups', async (_req, res) => {
   if (!isConnected) return res.status(503).json({ error: 'WhatsApp não conectado' })
   try {
