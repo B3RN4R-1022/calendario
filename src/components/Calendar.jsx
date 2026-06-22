@@ -26,7 +26,9 @@ export default function Calendar({ user, current, onCurrentChange, view, onChang
   }, [current])
 
   async function loadProfiles() {
-    const { data } = await supabase.from('user_profiles').select('id, color, name')
+    const { data } = await supabase
+      .from('user_profiles')
+      .select('id, color, name, whatsapp_phone, callmebot_key')
     if (data) {
       const map = {}
       data.forEach(p => { map[p.id] = p })
@@ -125,6 +127,7 @@ export default function Calendar({ user, current, onCurrentChange, view, onChang
           events={eventsForDay(selectedDay)}
           user={user}
           userColor={userColor}
+          profiles={profiles}
           onClose={() => setSelectedDay(null)}
           onRefresh={loadEvents}
         />

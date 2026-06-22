@@ -2,12 +2,13 @@ import { useState } from 'react'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { supabase } from '../supabaseClient'
+import { notifyBoth } from '../utils/notify'
 import './DayModal.css'
 
 const SHARED_COLOR = '#9b111e'
 const CROWN_COLOR  = '#c8a200'
 
-export default function DayModal({ day, events, user, userColor, onClose, onRefresh }) {
+export default function DayModal({ day, events, user, userColor, profiles, onClose, onRefresh }) {
   const [title, setTitle] = useState('')
   const [time, setTime] = useState('')
   const [isShared, setIsShared] = useState(false)
@@ -35,6 +36,12 @@ export default function DayModal({ day, events, user, userColor, onClose, onRefr
     if (error) {
       setSaveError(error.message)
     } else {
+      const myProfile = profiles?.[user.id]
+      const who = isShared ? '❤️ Para os dois' : `📅 ${myProfile?.name || 'Alguém'}`
+      const dateStr = format(day, "d 'de' MMMM", { locale: ptBR })
+      const msg = `${who} adicionou um compromisso:\n*${title.trim()}* às ${time}\n${dateStr}`
+      if (profiles) notifyBoth(profiles, msg)
+
       setTitle('')
       setTime('')
       setIsShared(false)

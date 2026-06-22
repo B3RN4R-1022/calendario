@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../supabaseClient'
+import { sendToUser } from '../utils/notify'
 import './StatusView.css'
 
 const TAGS = [
@@ -36,7 +37,9 @@ export default function StatusView({ user, onChangeView }) {
   }, [])
 
   async function loadProfiles() {
-    const { data } = await supabase.from('user_profiles').select('id, name, color, status')
+    const { data } = await supabase
+      .from('user_profiles')
+      .select('id, name, color, status, whatsapp_phone, callmebot_key')
     if (data) {
       setProfiles(data)
       const me = data.find(p => p.id === user.id)
@@ -50,6 +53,16 @@ export default function StatusView({ user, onChangeView }) {
     await supabase.from('user_profiles').update({ status: next }).eq('id', user.id)
     setMyStatus(next)
     setSaving(false)
+
+    if (next) {
+      const me = profiles.find(p => p.id === user.id)
+      const partner = profiles.find(p => p.id !== user.id)
+      const t = TAGS.find(t => t.label === next)
+      if (partner && me) {
+        await sendToUser(partner, `${t?.emoji || ''} *${me.name}* está agora:\n${t?.emoji || ''} ${next}`)
+      }
+    }
+
     loadProfiles()
   }
 
