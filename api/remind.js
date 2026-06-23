@@ -24,9 +24,17 @@ export default async function handler(req, res) {
   if (!profiles?.length) return res.json({ sent: 0 })
 
   const now = new Date()
-  const todayDate = now.toISOString().slice(0, 10)
-  const hour = now.getHours()
-  const minute = now.getMinutes()
+  const TZ = 'America/Sao_Paulo'
+  const brtParts = Object.fromEntries(
+    new Intl.DateTimeFormat('en-CA', {
+      timeZone: TZ,
+      year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', hour12: false,
+    }).formatToParts(now).map(p => [p.type, p.value])
+  )
+  const todayDate = `${brtParts.year}-${brtParts.month}-${brtParts.day}`
+  const hour = Number(brtParts.hour) % 24
+  const minute = Number(brtParts.minute)
   const tasks = []
   let sent = 0
 
@@ -67,9 +75,10 @@ export default async function handler(req, res) {
   }
 
   // ── Lembretes por compromisso ─────────────────────────
-  const tomorrowDate = new Date(now)
-  tomorrowDate.setDate(tomorrowDate.getDate() + 1)
-  const dates = [todayDate, tomorrowDate.toISOString().slice(0, 10)]
+  const [ty, tm, td] = todayDate.split('-').map(Number)
+  const tomorrow = new Date(Date.UTC(ty, tm - 1, td + 1))
+  const tomorrowDate = tomorrow.toISOString().slice(0, 10)
+  const dates = [todayDate, tomorrowDate]
 
   const { data: events } = await supabase
     .from('events')
@@ -77,9 +86,7 @@ export default async function handler(req, res) {
     .in('date', dates)
 
   for (const ev of events || []) {
-    const [h, m] = ev.time.split(':').map(Number)
-    const [yr, mo, dy] = ev.date.split('-').map(Number)
-    const evTime = new Date(yr, mo - 1, dy, h, m)
+    const evTime = new Date(`${ev.date}T${ev.time}:00-03:00`)
     const diffMin = (evTime - now) / 60000
 
     const owner   = profiles.find(p => p.id === ev.user_id)
