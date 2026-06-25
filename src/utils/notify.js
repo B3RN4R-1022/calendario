@@ -1,17 +1,20 @@
-const CALLMEBOT = 'https://api.callmebot.com/whatsapp.php'
+const API = '/api/notify'
 
-export async function sendToUser(profile, message) {
-  if (!profile?.whatsapp_phone || !profile?.callmebot_key) return
-  const params = new URLSearchParams({
-    phone: profile.whatsapp_phone,
-    text: message,
-    apikey: profile.callmebot_key,
-  })
+async function post(body) {
   try {
-    await fetch(`${CALLMEBOT}?${params}`, { mode: 'no-cors' })
+    await fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
   } catch (_) {}
 }
 
-export async function notifyBoth(profilesMap, message) {
-  await Promise.all(Object.values(profilesMap).map(p => sendToUser(p, message)))
+export function sendToUser(profile, message) {
+  if (!profile?.id) return
+  post({ toUserId: profile.id, message })
+}
+
+export function notifyBoth(profilesMap, message) {
+  post({ toAll: true, message })
 }
