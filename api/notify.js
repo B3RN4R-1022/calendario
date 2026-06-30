@@ -7,35 +7,34 @@ const supabase = createClient(
 
 const CALLMEBOT = 'https://api.callmebot.com/whatsapp.php'
 
+async function send(phone, key, message) {
+  const params = new URLSearchParams({ phone, text: message, apikey: key })
+  return fetch(`${CALLMEBOT}?${params}`).catch(() => {})
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
-
   if (req.method === 'OPTIONS') return res.status(200).end()
   if (req.method !== 'POST') return res.status(405).end()
 
-  const { toUserId, toAll, message } = req.body || {}
+  const { toAll, excludeUserId, toUserId, message } = req.body || {}
   if (!message) return res.status(400).json({ error: 'message required' })
 
   const { data: profiles } = await supabase
     .from('user_profiles')
     .select('id, whatsapp_phone, callmebot_key')
 
-  const targets = (toAll ? profiles : profiles?.filter(p => p.id === toUserId)) || []
+  let targets = profiles || []
+  if (toUserId)      targets = targets.filter(p => p.id === toUserId)
+  else if (excludeUserId) targets = targets.filter(p => p.id !== excludeUserId)
 
   await Promise.allSettled(
     targets
       .filter(p => p.whatsapp_phone && p.callmebot_key)
-      .map(p => {
-        const params = new URLSearchParams({
-          phone: p.whatsapp_phone,
-          text: message,
-          apikey: p.callmebot_key,
-        })
-        return fetch(`${CALLMEBOT}?${params}`)
-      })
+      .map(p => send(p.whatsapp_phone, p.callmebot_key, message))
   )
 
-  res.json({ ok: true })
+  res.json({ ok: true, sent: targets.length })
 }

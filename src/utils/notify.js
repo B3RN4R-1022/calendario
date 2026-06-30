@@ -10,11 +10,12 @@ async function post(body) {
   } catch (_) {}
 }
 
-export function sendToUser(profile, message) {
-  if (!profile?.id) return
-  post({ toUserId: profile.id, message })
+// Notifica todos MENOS o usuário atual
+export function notifyOther(currentUserId, message) {
+  post({ excludeUserId: currentUserId, message })
 }
 
-export function notifyBoth(profilesMap, message) {
+// Notifica todos
+export function notifyBoth(_profilesMap, message) {
   post({ toAll: true, message })
 }

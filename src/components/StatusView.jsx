@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../supabaseClient'
-import { sendToUser } from '../utils/notify'
+import { notifyOther } from '../utils/notify'
 import './StatusView.css'
 
 const TAGS = [
@@ -56,11 +56,8 @@ export default function StatusView({ user, onChangeView }) {
 
     if (next) {
       const me = profiles.find(p => p.id === user.id)
-      const partner = profiles.find(p => p.id !== user.id)
       const t = TAGS.find(t => t.label === next)
-      if (partner && me) {
-        await sendToUser(partner, `${t?.emoji || ''} *${me.name}* está agora:\n${t?.emoji || ''} ${next}`)
-      }
+      notifyOther(user.id, `${t?.emoji || ''} *${me?.name || 'Alguém'}* está agora:\n${t?.emoji || ''} ${next}`)
     }
 
     loadProfiles()
