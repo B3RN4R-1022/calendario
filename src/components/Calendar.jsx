@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import {
   format, startOfMonth, endOfMonth, eachDayOfInterval,
-  getDay, isSameDay, addMonths, subMonths
+  getDay, isSameDay, addMonths, subMonths, subDays, addDays
 } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { supabase } from '../supabaseClient'
@@ -53,6 +53,9 @@ export default function Calendar({ user, current, onCurrentChange, view, onChang
   const monthEnd = endOfMonth(current)
   const days = eachDayOfInterval({ start: monthStart, end: monthEnd })
   const startPad = getDay(monthStart)
+  const prevDays = Array.from({ length: startPad }, (_, i) => subDays(monthStart, startPad - i))
+  const endPad = (7 - (days.length + startPad) % 7) % 7
+  const nextDays = Array.from({ length: endPad }, (_, i) => addDays(monthEnd, i + 1))
 
   function eventsForDay(day) {
     const key = format(day, 'yyyy-MM-dd')
@@ -86,8 +89,10 @@ export default function Calendar({ user, current, onCurrentChange, view, onChang
         </div>
 
         <div className="cal-grid">
-          {Array.from({ length: startPad }).map((_, i) => (
-            <div key={`pad-${i}`} className="cal-day cal-day--empty" />
+          {prevDays.map(day => (
+            <div key={`prev-${day}`} className="cal-day cal-day--adjacent">
+              <span className="cal-day-num">{format(day, 'd')}</span>
+            </div>
           ))}
           {days.map(day => {
             const dayEvents = eventsForDay(day)
@@ -118,6 +123,11 @@ export default function Calendar({ user, current, onCurrentChange, view, onChang
               </div>
             )
           })}
+          {nextDays.map(day => (
+            <div key={`next-${day}`} className="cal-day cal-day--adjacent">
+              <span className="cal-day-num">{format(day, 'd')}</span>
+            </div>
+          ))}
         </div>
       </div>
 

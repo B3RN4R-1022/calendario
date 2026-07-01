@@ -61,6 +61,18 @@
   transform: none;
 }
 
+.cal-day--adjacent {
+  opacity: 0.2;
+  cursor: default;
+  pointer-events: none;
+}
+
+.cal-day--adjacent:hover {
+  transform: none;
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.08);
+}
+
 .cal-day--today .cal-day-num {
   background: #f5c842;
   color: #111;
